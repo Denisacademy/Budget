@@ -79,8 +79,9 @@ var UIcontroller = (function() {
         };
       },
 
-      addListItem: function(obj, type) {
+      addListItem: function(obj, type) {  //==obj from constructor (exp and inc)============ Make HTML
         var html, newHtml, element;
+
         // Create HTML string with placeholder text
         if(type === "inc") {
           element = DOMstring.incomeContainer;
@@ -94,12 +95,12 @@ var UIcontroller = (function() {
 
 
         // Replace placeholder text with some actual data
-        newHtml = html.replace('%id%', obj.id);
+        newHtml = html.replace('%id%', obj.id);  // regexp - регулярка типа
         newHtml = newHtml.replace('%description%', obj.description);
         newHtml = newHtml.replace('%value%', obj.value);
 
         // Insert the HTML into the DOM
-        document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
+        document.querySelector(element).insertAdjacentHTML('beforeend', newHtml); // element is a container either exp or inc
       },
 
       getDOMstrings: function() {
@@ -131,10 +132,10 @@ var controller = (function(budgetCtrl, UICtrl) {
     input = UICtrl.getInput();
     console.log(input);
     // 2. Add the item to the budget controller
-    newItem = budgetCtrl.addItem(input.type, input.description, input.value); //*----from budget 
+    newItem = budgetCtrl.addItem(input.type, input.description, input.value); //*----FROM BUDGET 
     // 3. Add the item to the UI
     
-    UIcontroller.addListItem(newItem, input.type);
+    UIcontroller.addListItem(newItem, input.type); // MARK UP UI
 
     // 4. Calculate the budget
     
