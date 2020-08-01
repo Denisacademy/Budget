@@ -72,7 +72,7 @@ var budgetController = (function() {
         data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100); 
         //Expense = 100 and income 300, spent 33.33% = 100 / 300 = 0.333 * 100
       } else {
-        data.percentage = 1;
+        data.percentage = -1;
       }
     },
     getBudget: function() {
@@ -102,9 +102,14 @@ var UIcontroller = (function() {
     inputButton: '.add__btn',
     incomeContainer: '.income__list',
     expensesContainer: '.expenses__list',
+    budgetLabel: '.budget__value',
+    incomeLabel: '.budget__income--value',
+    expensesLabel: '.budget__expenses--value',
+    percentageLabel: '.budget__expenses--percentage'
+
 
   }
-
+  //console.log(DOMstring);
     return {
       getInput: function() {
         return {
@@ -153,6 +158,23 @@ var UIcontroller = (function() {
         fieldsArr[0].focus();// after adding item to clear fileds and set focus on description
 
       },
+
+      displayBudget: function(obj) {
+        //debugger
+        document.querySelector(DOMstring.budgetLabel).textContent = obj.budget;
+        document.querySelector(DOMstring.incomeLabel).textContent = obj.totalInc;
+        document.querySelector(DOMstring.expensesLabel).textContent = obj.totalExp;
+        document.querySelector(DOMstring.percentageLabel).textContent = obj.percentage;
+
+        if(obj.percentage > 0) {
+          document.querySelector(DOMstring.percentageLabel).textContent = obj.percentage + "%";
+        } else {
+          document.querySelector(DOMstring.percentageLabel).textContent = "---"; //show _ if there is only expenses
+
+        }
+
+      },
+
       getDOMstrings: function() {
         return DOMstring;
       }
@@ -163,8 +185,8 @@ var UIcontroller = (function() {
 //GLOBAL APP controller===*** //btn
 var controller = (function(budgetCtrl, UICtrl) {
   
-  var setupEventListeners = function() {
-    var DOM = UIcontroller.getDOMstrings(); //get input and el button document
+  var setupEventListeners = function() { //?????
+    var DOM = UICtrl.getDOMstrings(); //get input and el button document
     
     document.querySelector(DOM.inputButton).addEventListener('click', ctrlAddItem); //btn add
  
@@ -184,6 +206,7 @@ var controller = (function(budgetCtrl, UICtrl) {
     
     // 3. Display budget on the UI
     console.log(budget);
+    UICtrl.displayBudget(budget);
   };
 
   
@@ -199,10 +222,10 @@ var controller = (function(budgetCtrl, UICtrl) {
       newItem = budgetCtrl.addItem(input.type, input.description, input.value); //*----FROM BUDGET 
       
       // 3. Add the item to the UI
-      UIcontroller.addListItem(newItem, input.type); // MARK UP UI
+      UICtrl.addListItem(newItem, input.type); // MARK UP UI
       
       // 4. Clear the fields
-      UIcontroller.clearFields();
+      UICtrl.clearFields();
 
       // 5. Calculate and update budget 
       updateBudget();
@@ -213,6 +236,12 @@ var controller = (function(budgetCtrl, UICtrl) {
     return {
       init: function() {
         console.log('Application started...');
+        UICtrl.displayBudget({
+          budget: 0,
+          totalInc: 0,
+          totalExp: 0,
+          percentage: -1
+        }); // update fields when we start app
         setupEventListeners();
       }
     }
