@@ -95,7 +95,7 @@ var budgetController = (function() {
 var UIcontroller = (function() {
   // Some code -- collect neccesary fields
 
-  var DOMstring = {  //short way
+  var DOMstrings = {  //short way
     inputType: '.add__type',
     inputDescription: '.add__description',
     inputValue: '.add__value',
@@ -105,18 +105,19 @@ var UIcontroller = (function() {
     budgetLabel: '.budget__value',
     incomeLabel: '.budget__income--value',
     expensesLabel: '.budget__expenses--value',
-    percentageLabel: '.budget__expenses--percentage'
+    percentageLabel: '.budget__expenses--percentage',
+    container: '.container'
 
 
   }
-  //console.log(DOMstring);
+  //console.log(DOMstrings);
     return {
       getInput: function() {
         return {
           //type: document.querySelector('.add__type').value, //inc /exp
-          type: document.querySelector(DOMstring.inputType).value, //inc /exp
-          description: document.querySelector(DOMstring.inputDescription).value,
-          value: parseFloat(document.querySelector(DOMstring.inputValue).value)//string to number
+          type: document.querySelector(DOMstrings.inputType).value, //inc /exp
+          description: document.querySelector(DOMstrings.inputDescription).value,
+          value: parseFloat(document.querySelector(DOMstrings.inputValue).value)//string to number
         };
       },
 
@@ -125,12 +126,12 @@ var UIcontroller = (function() {
 
         // Create HTML string with placeholder text
         if(type === "inc") {
-          element = DOMstring.incomeContainer;
-          html = `<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div>
+          element = DOMstrings.incomeContainer;
+          html = `<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div>
           <div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>`
         } else if(type === "exp") {
-            element = DOMstring.expensesContainer;
-            html = `<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div>
+            element = DOMstrings.expensesContainer;
+            html = `<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div>
             <div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>`
         }
 
@@ -147,7 +148,7 @@ var UIcontroller = (function() {
       clearFields: function() {//document.querySelectorAll('.add__description , .add__value')
         var fields, fieldsArr;
 
-        fields = document.querySelectorAll(DOMstring.inputDescription + ', ' + DOMstring.inputValue);
+        fields = document.querySelectorAll(DOMstrings.inputDescription + ', ' + DOMstrings.inputValue);
 
         fieldsArr = Array.prototype.slice.call(fields);//make array form dom elements
 
@@ -161,22 +162,22 @@ var UIcontroller = (function() {
 
       displayBudget: function(obj) {
         //debugger
-        document.querySelector(DOMstring.budgetLabel).textContent = obj.budget;
-        document.querySelector(DOMstring.incomeLabel).textContent = obj.totalInc;
-        document.querySelector(DOMstring.expensesLabel).textContent = obj.totalExp;
-        document.querySelector(DOMstring.percentageLabel).textContent = obj.percentage;
+        document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget;
+        document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc;
+        document.querySelector(DOMstrings.expensesLabel).textContent = obj.totalExp;
+        document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage;
 
         if(obj.percentage > 0) {
-          document.querySelector(DOMstring.percentageLabel).textContent = obj.percentage + "%";
+          document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + "%";
         } else {
-          document.querySelector(DOMstring.percentageLabel).textContent = "---"; //show _ if there is only expenses
+          document.querySelector(DOMstrings.percentageLabel).textContent = "---"; //show _ if there is only expenses
 
         }
 
       },
 
       getDOMstrings: function() {
-        return DOMstring;
+        return DOMstrings;
       }
     }
 })();
@@ -195,6 +196,9 @@ var controller = (function(budgetCtrl, UICtrl) {
         ctrlAddItem();//console.log(event.key === 'Enter');
       } 
     });
+
+    document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);//catch event on the element clicked (buble)
+
   };
  
   var updateBudget = function() {
@@ -232,6 +236,29 @@ var controller = (function(budgetCtrl, UICtrl) {
     }
 
   };
+
+  var ctrlDeleteItem = function(event) {
+    var itemID, splitID, type, ID;
+
+    itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
+
+    if (itemID) { //inc-1
+
+      splitID = itemID.split('-')//get massive with "inc-0" ['inc', '0']
+      type = splitID[0];
+      ID = splitID[1];
+
+      // 1. delete the item from dat structure
+
+      // 2. Delete the item from the UI
+
+      // 3. Update and show the new budget
+    }
+
+    console.log(splitID); //button is parent for x
+
+  }
+
 
     return {
       init: function() {
