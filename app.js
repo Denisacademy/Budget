@@ -93,6 +93,19 @@ var budgetController = (function() {
         data.percentage = -1;
       }
     },
+
+    calculatePercentages: function() {
+        /*
+        a=20
+        b=10
+        c=40
+        income =100
+        a =20/100 =20%
+        b=10/100 = 10%
+        c=40/100-40%
+        */
+    },
+
     getBudget: function() {
       return {
         budget: data.budget,
@@ -110,7 +123,7 @@ var budgetController = (function() {
 })();
 
 //UI controller====***
-var UIcontroller = (function() {
+var UIController = (function() {
   // Some code -- collect neccesary fields
 
   var DOMstrings = {  //short way
@@ -125,9 +138,8 @@ var UIcontroller = (function() {
     expensesLabel: '.budget__expenses--value',
     percentageLabel: '.budget__expenses--percentage',
     container: '.container'
-
-
   }
+
   //console.log(DOMstrings);
     return {
       getInput: function() {
@@ -152,7 +164,6 @@ var UIcontroller = (function() {
             html = `<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div>
             <div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>`
         }
-
 
         // Replace placeholder text with some actual data
         newHtml = html.replace('%id%', obj.id);  // regexp - регулярка типа
@@ -205,7 +216,6 @@ var UIcontroller = (function() {
     }
 })();
 
-
 //GLOBAL APP controller===*** //btn
 var controller = (function(budgetCtrl, UICtrl) {
   
@@ -235,7 +245,6 @@ var controller = (function(budgetCtrl, UICtrl) {
     console.log(budget);
     UICtrl.displayBudget(budget);
   };
-
   
   var ctrlAddItem = function() {
     var input, newItem;
@@ -256,9 +265,22 @@ var controller = (function(budgetCtrl, UICtrl) {
 
       // 5. Calculate and update budget 
       updateBudget();
+
+      // 6. Calculate and update percentages
+      updatePercentages();
     }
 
   };
+
+  var updatePercentages = function() {
+    // 1. Calculate percentages
+
+    // 2. Read percentages from the budget controller
+
+    // 3. Updae the UI the new percentages
+
+  };
+
 
   var ctrlDeleteItem = function(event) {
     var itemID, splitID, type, ID;
@@ -279,12 +301,16 @@ var controller = (function(budgetCtrl, UICtrl) {
 
       // 3. Update and show the new budget
       updateBudget();
-    }
+
+      // 6. Calculate and update percentages
+        updatePercentages();
+      }
+
+    
 
     console.log(splitID); //button is parent for x
-
-  }
-
+}
+  
 
     return {
       init: function() {
@@ -299,6 +325,7 @@ var controller = (function(budgetCtrl, UICtrl) {
       }
     }
 
-})(budgetController, UIcontroller);
+})(budgetController, UIController);
 
 controller.init();
+
