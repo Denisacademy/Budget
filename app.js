@@ -164,7 +164,46 @@ var UIController = (function() {
     percentageLabel: '.budget__expenses--percentage',
     container: '.container',
     expensesPercentageLabel: '.item__percentage'
+  };
+
+  var formatNumber = function(num, type) {
+    var numSplit, int, dec;
+    /*
+    + or -before number
+    exactly 2 decimal points 
+    comma separating the thousands
+
+    2310.4657 -> + 2,310.46
+    2000 -> 2,000.00
+    */
+
+    num = Math.abs(num);
+    num = num.toFixed(2);
+
+    numSplit = num.split('.');
+
+    int = numSplit[0];
+    if (int.length > 3) {
+      int = int.substr(0, int.length - 3) + ',' + int.substr(int.length - 3, 3); // inp 2310 = 2,310 || 23510 = 23,510
+    }
+
+    
+    dec = numSplit[1];
+
+    type === 'exp' ? sign = '-' : sign = '+';
+    
+    return (type === 'exp' ? '-' : '+') + ' ' + int + '.' + dec;
+
   }
+
+
+
+  var nodeListForEach = function(list, callback) { // CALLBACK CHECK imp forEach()
+    for(var i = 0; i < list.length; i++) {
+      callback(list[i], i); 
+    }
+  }; 
+
 
   //console.log(DOMstrings);
     return {
@@ -181,11 +220,11 @@ var UIController = (function() {
         var html, newHtml, element;
 
         // Create HTML string with placeholder text
-        if(type === "inc") {
+        if (type === "inc") {
           element = DOMstrings.incomeContainer;
           html = `<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div>
           <div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>`
-        } else if(type === "exp") {
+        } else if (type === "exp") {
             element = DOMstrings.expensesContainer;
             html = `<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div>
             <div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>`
@@ -194,7 +233,7 @@ var UIController = (function() {
         // Replace placeholder text with some actual data
         newHtml = html.replace('%id%', obj.id);  // regexp - регулярка типа
         newHtml = newHtml.replace('%description%', obj.description);
-        newHtml = newHtml.replace('%value%', obj.value);
+        newHtml = newHtml.replace('%value%', formatNumber(obj.value, type));
 
         // Insert the HTML into the DOM
         document.querySelector(element).insertAdjacentHTML('beforeend', newHtml); // element is a container either exp or inc
@@ -221,11 +260,19 @@ var UIController = (function() {
       },
 
       displayBudget: function(obj) {
+        
+        obj.budget > 0 ? type = 'inc' : type = 'exp' ;
+        
         //debugger
-        document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget;
+        /*document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget;
         document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc;
         document.querySelector(DOMstrings.expensesLabel).textContent = obj.totalExp;
-        document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage;
+        document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage;*/ //another part
+
+
+        document.querySelector(DOMstrings.budgetLabel).textContent = formatNumber(obj.budget, type);
+        document.querySelector(DOMstrings.incomeLabel).textContent = formatNumber(obj.totalInc, 'inc');
+        document.querySelector(DOMstrings.expensesLabel).textContent = formatNumber(obj.totalExp, 'exp');
 
         if(obj.percentage > 0) {
           document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + "%";
@@ -236,17 +283,25 @@ var UIController = (function() {
 
       },
 
-      displayPercentages: function(percentages) {
+      displayPercentages: function(percentages) { 
 
         var fields = document.querySelectorAll(DOMstrings.expensesPercentageLabel);
+        console.log(fields);
 
-        var nodeListForEach = function(list, callback) {
-          for(var i = 0; i < list.length; i++) {
-            callback(list[i], i); 
+        /*
+        Array.from(fil).forEach(current => {
+          if(current > 0) {
+            textContent = percentages[index] + '%';
+          } else {
+            current.textContent = '---';
           }
-        }; 
+      })
+        */
 
-        nodeListForEach(fields, function(current, index) {
+
+
+
+        nodeListForEach(fields, function(current, index) {//Call back fun
           // Do stuff
           if(percentages[index] > 0) {
             current.textContent = percentages[index] + '%';
@@ -257,6 +312,9 @@ var UIController = (function() {
         });
 
       },
+
+  
+
 
       getDOMstrings: function() {
         return DOMstrings;
