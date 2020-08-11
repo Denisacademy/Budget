@@ -155,7 +155,7 @@ var UIController = (function() {
     inputType: '.add__type',
     inputDescription: '.add__description',
     inputValue: '.add__value',
-    inputButton: '.add__btn',
+    inputBtn: '.add__btn',
     incomeContainer: '.income__list',
     expensesContainer: '.expenses__list',
     budgetLabel: '.budget__value',
@@ -163,7 +163,8 @@ var UIController = (function() {
     expensesLabel: '.budget__expenses--value',
     percentageLabel: '.budget__expenses--percentage',
     container: '.container',
-    expensesPercentageLabel: '.item__percentage'
+    expensesPercentageLabel: '.item__percentage',
+    dateLabel: '.budget__title--month'
   };
 
   var formatNumber = function(num, type) {
@@ -202,7 +203,7 @@ var UIController = (function() {
     for(var i = 0; i < list.length; i++) {
       callback(list[i], i); 
     }
-  }; 
+  }; // put here to use several times
 
 
   //console.log(DOMstrings);
@@ -298,9 +299,6 @@ var UIController = (function() {
       })
         */
 
-
-
-
         nodeListForEach(fields, function(current, index) {//Call back fun
           // Do stuff
           if(percentages[index] > 0) {
@@ -314,7 +312,31 @@ var UIController = (function() {
       },
 
   
+      displayMonth: function() {
+        var now, year, month, months;
+        var now = new Date();// 2016, 11, 25
+        months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];//0 1 2 3 4 5 6
+        month = now.getMonth();
+        year = now.getFullYear();                              //choose form array current moth according to date
+        document.querySelector(DOMstrings.dateLabel).textContent = months[month] + ' ' + year;// August isn`t 7st month so we need to create array to correct 
+        
+      },
 
+      changedType: function() {
+
+        var fields = document.querySelectorAll(
+          DOMstrings.inputType + ',' + 
+          DOMstrings.inputDescription + ',' + 
+          DOMstrings.inputValue);
+
+        nodeListForEach(fields, function(cur) { //call back use second time
+          cur.classList.toggle('red-focus');
+        });
+
+        document.querySelector(DOMstrings.inputBtn).classList.toggle('red');
+
+      
+        },      
 
       getDOMstrings: function() {
         return DOMstrings;
@@ -328,7 +350,7 @@ var controller = (function(budgetCtrl, UICtrl) {
   var setupEventListeners = function() { //?????
     var DOM = UICtrl.getDOMstrings(); //get input and el button document
     
-    document.querySelector(DOM.inputButton).addEventListener('click', ctrlAddItem); //btn add
+    document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem); //btn add
  
     document.addEventListener('keypress', function(event) { //alternat add item
       if(event.keyCode === 13 || event.which === 13) {
@@ -337,6 +359,8 @@ var controller = (function(budgetCtrl, UICtrl) {
     });
 
     document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);//catch event on the element clicked (buble)
+
+    document.querySelector(DOM.inputType).addEventListener('change', UICtrl.changedType);
 
   };
  
@@ -424,6 +448,7 @@ var controller = (function(budgetCtrl, UICtrl) {
     return {
       init: function() {
         console.log('Application started...');
+        UICtrl.displayMonth();
         UICtrl.displayBudget({
           budget: 0,
           totalInc: 0,
